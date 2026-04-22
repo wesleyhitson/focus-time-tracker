@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FocusTimeTracker.ViewModels"
+             xmlns:models="using:FocusTimeTracker.Models"
+             x:Class="FocusTimeTracker.Views.HistoryView"
+             x:DataType="vm:HistoryViewModel">
+
+    <Grid RowDefinitions="Auto,*" Margin="20,10">
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0"
+                   Text="Your Focus Sessions"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   Margin="0,10,0,20"/>
+
+        <!-- Sessions List -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Sessions}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="models:FocusSession">
+                        <Border Background="#2D2D3A"
+                                BorderThickness="0"
+                                Padding="15"
+                                Margin="0,0,0,10"
+                                CornerRadius="12">
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" >
+
+                                <!-- Status Icon -->
+                                <Border Grid.Column="0"
+                                        Background="{Binding StatusColor}"
+                                        Width="50"
+                                        Height="50"
+                                        CornerRadius="25"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,20,0">
+                                    <TextBlock Text="{Binding StatusIcon}"
+                                               FontSize="24"
+                                               FontFamily="Segoe UI Emoji, Segoe UI Symbol, Arial Unicode MS"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="White"/>
+                                </Border>
+
+                                <!-- Session Details -->
+                                <StackPanel Grid.Column="1" 
+                                            VerticalAlignment="Center"
+                                            Spacing="5">
+                                    <TextBlock Text="{Binding Category}"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="White"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <TextBlock Text="{Binding DisplayDate}"
+                                                   Foreground="#A0A0A0" 
+                                                   FontSize="13"/>
+                                        <TextBlock Text="•"
+                                                   Foreground="#A0A0A0" 
+                                                   FontSize="13"/>
+                                        <TextBlock Text="{Binding DisplayTime}"
+                                                   Foreground="#A0A0A0" 
+                                                   FontSize="13"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Notes}"
+                                               FontSize="12"
+                                               Foreground="#6B6B7B"
+                                               IsVisible="{Binding Notes, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                </StackPanel>
+
+                                <!-- Duration and Delete Button -->
+                                <StackPanel Grid.Column="2" 
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Right"
+                                            Spacing="10">
+                                    <TextBlock VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"
+                                               Foreground="White"
+                                               FontSize="18"
+                                               FontWeight="Bold"
+                                               Text="{Binding DurationMinutes, StringFormat='{}{0} min'}"/>
+
+                                    <Button Content="Delete"
+                                            Background="#EF4444"
+                                            Foreground="White"
+                                            Command="{Binding $parent[ItemsControl].((vm:HistoryViewModel)DataContext).DeleteSessionCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Padding="15,8"
+                                            CornerRadius="8"
+                                            FontSize="12"/>
+                                </StackPanel>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Empty State -->
+        <StackPanel Grid.Row="1"
+                    VerticalAlignment="Center" 
+                    HorizontalAlignment="Center"
+                    Spacing="10"
+                    IsVisible="{Binding !Sessions.Count}">
+            <TextBlock Text="📚"
+                       FontSize="64"
+                       FontFamily="Segoe UI Emoji"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="No focus sessions yet"
+                       FontSize="18"
+                       Foreground="#A0A0A0"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Start your first session from the Timer tab!"
+                       FontSize="14"
+                       Foreground="#6B6B7B"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Loading Indicator -->
+        <ProgressBar Grid.Row="1"
+                     IsIndeterminate="{Binding IsLoading}"
+                     IsVisible="{Binding IsLoading}"
+                     Foreground="#7C3AED"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Width="200"/>
+
+    </Grid>
+
+</UserControl>
+
